@@ -36,7 +36,7 @@ enum MessageDirection {
 
 model Ticket {
   id                    String   @id @default(uuid())
-  message_id_original   String
+ message_id_original   String   @unique
 
   subject               String?
   from_name             String?
