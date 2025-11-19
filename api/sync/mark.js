@@ -11,10 +11,10 @@ module.exports = async (req, res) => {
       data: req.body
     })
 
-    res.json(log)
+    return res.json(log)
 
-  } catch (e) {
-    console.error(e)
-    res.status(500).json({ error: 'Internal server error' })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
