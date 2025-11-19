@@ -1,0 +1,15 @@
+{
+  "name": "micos-mail-router-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "latest"
+  },
+  "devDependencies": {
+    "prisma": "latest"
+  },
+  "scripts": {
+    "postinstall": "prisma generate",
+    "migrate": "prisma migrate deploy"
+  }
+}
