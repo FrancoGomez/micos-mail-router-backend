@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,75 +8,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OrigenReal {
-  hotmail
-  chubut
-  lapampa
-  mza
-  audiologia
-  tesoreria
-  directo
-}
-
-enum SectorPrincipal {
-  ventas
-  admin
-  teso
-}
-
-enum TicketEstado {
-  pendiente
-  respondido
-}
-
-enum MessageDirection {
-  in
-  out
-  internal
-}
-
 model Ticket {
-  id                    String   @id @default(uuid())
- message_id_original   String   @unique
+  id                     String   @id @default(uuid())
+  message_id_original    String   @unique
+  subject                String
+  from_name              String
+  from_email             String
+  origen_real            String
+  sector_principal       String
+  sectores_involucrados  Json
+  estado                 String   @default("open")
+  is_answered_global     Boolean  @default(false)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
 
-  subject               String?
-  from_name             String?
-  from_email            String?
-
-  origen_real           OrigenReal
-  sector_principal      SectorPrincipal
-
-  sectores_involucrados Json      @default("[]")
-
-  estado                TicketEstado @default(pendiente)
-  is_answered_global    Boolean      @default(false)
-
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
-
-  messages              TicketMessage[]
+  messages TicketMessage[]
 }
 
 model TicketMessage {
-  id                String   @id @default(uuid())
-  ticket_id         String
-  ticket            Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  ticketId    String
+  message_id  String
+  from_email  String
+  from_name   String
+  html        String?
+  text        String?
+  created_at  DateTime @default(now())
 
-  direction         MessageDirection
+  ticket Ticket @relation(fields: [ticketId], references: [id])
 
-  raw_message_id    String?
-  references_in     String?
-  body_html         String?
-  body_text         String?
-  attachments       Json?
-  interno_responde  String?
-
-  created_at        DateTime @default(now())
+  @@index([ticketId])
 }
 
 model SyncLog {
-  id             String   @id @default(uuid())
-  raw_message_id String
-  source         String
-  processed_at   DateTime @default(now())
+  id        String   @id @default(uuid())
+  source    String
+  last_sync DateTime
 }
