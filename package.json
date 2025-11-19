@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/client": "5.16.1"
   },
   "devDependencies": {
-    "prisma": "latest"
+    "prisma": "5.16.1"
   },
   "scripts": {
     "postinstall": "prisma generate",
