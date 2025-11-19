@@ -33,7 +33,12 @@ module.exports = async (req, res) => {
     return res.json(ticket)
 
   } catch (err) {
-    console.error(err)
-    return res.status(500).json({ error: 'Internal server error' })
+    console.error("PRISMA ERROR:", err)
+
+    return res.status(500).json({
+      error: 'Internal server error',
+      details: err.message,
+      meta: err.meta
+    })
   }
 }
