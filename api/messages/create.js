@@ -7,14 +7,14 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const msg = await prisma.ticketMessage.create({
+    const message = await prisma.ticketMessage.create({
       data: req.body
     })
 
-    res.json(msg)
+    return res.json(message)
 
-  } catch (e) {
-    console.error(e)
-    res.status(500).json({ error: 'Internal server error' })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
