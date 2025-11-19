@@ -1,17 +1,20 @@
-import { PrismaClient } from '@prisma/client'
+const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end()
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
 
-  const data = req.body
+  try {
+    const log = await prisma.syncLog.create({
+      data: req.body
+    })
 
-  const log = await prisma.syncLog.create({
-    data: {
-      raw_message_id: data.raw_message_id,
-      source: data.source
-    }
-  })
+    res.json(log)
 
-  res.json(log)
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }
