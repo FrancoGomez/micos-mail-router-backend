@@ -30,10 +30,10 @@ module.exports = async (req, res) => {
       }
     })
 
-    res.json(ticket)
+    return res.json(ticket)
 
-  } catch (e) {
-    console.error(e)
-    res.status(500).json({ error: 'Internal server error' })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
