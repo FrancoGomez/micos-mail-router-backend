@@ -1,4 +1,6 @@
-// prisma/schema.prisma
+// ================================
+//  GENERATORS / DATASOURCE
+// ================================
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,40 +10,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ================================
+//  MODELO: Ticket
+// ================================
 model Ticket {
-  id                     String   @id @default(uuid())
-  message_id_original    String   @unique
-  subject                String
-  from_name              String
+  id                     String    @id @default(cuid())
+  ticket_key             String    @unique
+  message_id_original    String    @unique
+
+  subject_original       String
+  from_name              String?
   from_email             String
   origen_real            String
   sector_principal       String
-  sectores_involucrados  Json
-  estado                 String   @default("open")
-  is_answered_global     Boolean  @default(false)
-  created_at             DateTime @default(now())
-  updated_at             DateTime @updatedAt
+  sectores_involucrados  String[]  // ventas, administracion, tesoreria
 
-  messages TicketMessage[]
+  estado                 String    @default("pendiente") // pendiente / respondido / cerrado
+  is_answered_global     Boolean   @default(false)
+
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  messages               TicketMessage[]
 }
 
+// ================================
+//  MODELO: TicketMessage
+// ================================
 model TicketMessage {
-  id          String   @id @default(uuid())
-  ticketId    String
-  message_id  String
-  from_email  String
-  from_name   String
-  html        String?
-  text        String?
-  created_at  DateTime @default(now())
+  id              String    @id @default(cuid())
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
+  ticket_id       String
+  ticket          Ticket    @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
 
-  @@index([ticketId])
+  message_id      String    @unique                    // Único por mail real
+  from_name       String?
+  from_email      String?
+  to_email        String?
+  subject         String?
+  html            String?
+  text            String?
+  raw_headers     Json?
+
+  received_at     DateTime
+  created_at      DateTime  @default(now())
+
+  // Para métricas futuras
+  tipo            String?   // entrada_cliente | reply_interno | reply_cliente | system | etc
+  origen          String?   // ventas/admin/teso/buffer/sendgrid
 }
 
-model SyncLog {
-  id        String   @id @default(uuid())
-  source    String
-  last_sync DateTime
-}
+// ================================
+//  ÍNDICES IMPORTANTES
+// ================================
+@@index([ticket_key])
+@@index([message_id_original])
+@@index([from_email])
+@@index([sector_principal])
